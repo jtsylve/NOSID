@@ -29,9 +29,11 @@
     ; set heartbeat timer latch value
     +write16 CIA1_TA_LO, HEARTBEAT_IRQ_TIME
 
-    ; enable heartbeat timer
+    ; enable heartbeat timer IRQ
     lda #%10000001
     sta CIA1_ICR
+
+    ; start heartbeat timer
     lda #%00010001
     sta CIA1_CRA
 

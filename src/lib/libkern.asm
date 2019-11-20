@@ -1,5 +1,6 @@
 ; kernel library and helpful macros
 
+; write a 16 bit value to an address
 !macro write16 .address, .value {
     lda #<.value
     sta .address
@@ -7,6 +8,7 @@
     sta .address+1
 }
 
+; push all register to stack
 !macro save_regs {
     pha
     txa
@@ -15,10 +17,17 @@
     pha
 }
 
+; restore saved registers from stack
 !macro restore_regs {
     pla
     tay
     pla
     tax
     pla
+}
+
+; yield to the scheduler, causing an early task switch
+!macro yield {
+    brk
+    nop
 }

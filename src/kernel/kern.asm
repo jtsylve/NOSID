@@ -14,7 +14,7 @@
 .kern_init
     ; disable VICII interrupts
     lda #0
-    sta $D01A   ; interrupt mask register
+    sta VICII_IE ; interrupt mask register
 
     ; disable CIA timers
     lda #%01111111
@@ -45,9 +45,12 @@
     jmp *
 
 .irq_handler
-    +save_regs
-    inc $D020 ; change border color (just for testing)
+    sei             ; disable interrupts
+    +save_regs      ; backup registers
+
+    inc VICII_EC    ; change border color (just for testing)
 
     lda CIA1_ICR    ; acknowledge interrupt
-    +restore_regs
+    +restore_regs   ; restore registers
+    cli             ; enable interrupts
     rti

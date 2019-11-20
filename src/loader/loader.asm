@@ -1,6 +1,7 @@
 ; The purpose of the loader is to replace the standard C64 OS with NOSID
 !to "loader.prg", cbm
 
+!src "../hardware.asm"
 !src "../memmap.asm"
 
 ; Commodore Basic bytecode to call SYS 2061 to call our assembly
@@ -49,41 +50,41 @@ LOAD    = $FFD5
 +
 }
 
-; LOADER
-sei ; disable interrupts
+.loader
+    sei ; disable interrupts
 
-jsr CINIT ; initialize VIC and clear screen
+    jsr CINIT ; initialize VIC and clear screen
 
-; set screen and border to black
-lda #0      ; black
-sta $d020   ; border color
-sta $d021   ; background color
+    ; set screen and border to black
+    lda #BLACK
+    sta VICII_EC    ; border color
+    sta VICII_B0C   ; background color
 
-; set text color to white
-lda #1      ; white
-sta $0286   ; character color (C64 KERNAL)
+    ; set text color to white
+    lda #WHITE
+    sta $0286   ; character color (C64 KERNAL)
 
-; set upper/lowercase mode
-lda #23
-sta $d018  ; VICII memory setup register
+    ; set upper/lowercase mode
+    lda #%00010111
+    sta VICII_PTR  ; VICII memory setup register
 
-; print loading string
-+puts .loading_message
+    ; print loading string
+    +puts .loading_message
 
-; load kernel code
-+load .kern_name, .kern_name_len, .load_error
+    ; load kernel code
+    +load .kern_name, .kern_name_len, .load_error
 
-; print init message
-+puts .init_message
+    ; print init message
+    +puts .init_message
 
-; switch out basic and kernel roms
-lda %111
-sta 0
-lda %101
-sta 1
+    ; switch out basic and kernel roms
+    lda %111
+    sta CPU_DDR
+    lda %101
+    sta CPU_OUTR
 
-; initialize the kernel
-jmp KERN
+    ; initialize the kernel
+    jmp KERN
 
 ; DATA
 .loading_message    !pet  "[+] Loading NOSID...", 13, 0

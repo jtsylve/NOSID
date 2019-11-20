@@ -1,45 +1,51 @@
 ; KERN is the main kernel binary
 !to "kern", cbm
 
+
+!src "../hardware.asm"
 !src "../memmap.asm"
 
 !src "../lib/libkern.asm"
 
 !src "config.asm"
-!src "hardware.asm"
 
 * = KERN
 
 .kern_init
-; disable VICII interrupts
-lda #0
-sta $D01A   ; interrupt mask register
+    ; disable VICII interrupts
+    lda #0
+    sta $D01A   ; interrupt mask register
 
-; disable CIA timers
-lda #%01111111
-sta CIA1_ICR
-sta CIA2_ICR
+    ; disable CIA timers
+    lda #%01111111
+    sta CIA1_ICR
+    sta CIA2_ICR
 
-; set up interrupt vectors
-+write16 VECTOR_CS, .kern_init
-+write16 VECTOR_IRQ, .irq_handler
+    ; set up interrupt vectors
+    +write16 VECTOR_CS, .kern_init
+    +write16 VECTOR_IRQ, .irq_handler
 
-; set heartbeat timer latch value
-+write16 CIA1_TA_LO, HEARTBEAT_IRQ_TIME
+    ; set heartbeat timer latch value
+    +write16 CIA1_TA_LO, HEARTBEAT_IRQ_TIME
 
-; enable heartbeat timer
-lda #%10000001
-sta CIA1_ICR
-lda #%00010001
-sta CIA1_CRA
+    ; enable heartbeat timer
+    lda #%10000001
+    sta CIA1_ICR
+    lda #%00010001
+    sta CIA1_CRA
 
-cli     ; enable interrupts
+    ; bank out I/O space
+    lda #%100
+    sta CPU_OUTR
 
-; TODO - start init task
-jmp *
+    ; enable interrupts
+    cli 
+
+    ; TODO - start init task
+    jmp *
 
 .irq_handler
-inc $D020 ; change border color (just for testing)
+    inc $D020 ; change border color (just for testing)
 
-lda CIA1_ICR    ; acknowledge interrupt
-rti
+    lda CIA1_ICR    ; acknowledge interrupt
+    rti

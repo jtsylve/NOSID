@@ -6,3 +6,4 @@
     lda #>.value
     sta .address+1
 }
+

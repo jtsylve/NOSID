@@ -1,5 +1,14 @@
 ; convenience labels for hardware registers
 
+; 6510 CPU
+CPU_DDR     = $0000 ; data direction register
+CPU_OUTR    = $0001 ; output register
+
+; interrupt vectors
+VECTOR_NMI  = $FFFA ; non-maskable interrupt vector
+VECTOR_CS   = $FFFC ; cold start vector
+VECTOR_IRQ  = $FFFE ; IRQ/BRK vector
+
 ; CIA 1
 CIA1_PRA        = $DC00 ; data port A
 CIA1_PRB        = $DC01 ; data port B
@@ -36,6 +45,28 @@ CIA2_ICR        = $DD0D ; interrupt control and status
 CIA2_CRA        = $DD0E ; control timer A
 CIA2_CRB        = $DD0F ; control timer B
 
-VECTOR_NMI  = $FFFA ; non-maskable interrupt vector
-VECTOR_CS   = $FFFC ; cold start vector
-VECTOR_IRQ  = $FFFE ; IRQ/BRK vector
+; VICII
+VICII_PTR   = $D018 ; memory pointers
+VICII_EC    = $D020 ; border color
+VICII_B0C   = $D021 ; background color 0
+VICII_B1C   = $D022 ; background color 1
+VICII_B2C   = $D023 ; background color 2
+VICII_B3C   = $D024 ; background color 3
+
+; VICII Colors
+BLACK       = 0
+WHITE       = 1
+RED         = 2
+CYAN        = 3
+PURPLE      = 4
+GREEN       = 5
+BLUE        = 6
+YELLOW      = 7
+ORANGE      = 8
+BROWN       = 9
+LIGHT_RED   = 10
+DARK_GRAY   = 11
+MED_GRAY    = 12
+LIGHT_GREEN = 13
+LIGHT_BLUE  = 14
+LIGHT_GRAY  = 15

@@ -45,7 +45,9 @@
     jmp *
 
 .irq_handler
+    +save_regs
     inc $D020 ; change border color (just for testing)
 
     lda CIA1_ICR    ; acknowledge interrupt
+    +restore_regs
     rti

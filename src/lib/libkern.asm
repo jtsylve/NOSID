@@ -7,3 +7,18 @@
     sta .address+1
 }
 
+!macro save_regs {
+    pha
+    txa
+    pha
+    tya
+    pha
+}
+
+!macro restore_regs {
+    pla
+    tay
+    pla
+    tax
+    pla
+}

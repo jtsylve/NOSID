@@ -10,7 +10,6 @@ clean:
 nosid.d64: clean all
 	c1541 -format nosid,00 d64 $@
 	c1541 -attach $@ -write src/loader/loader.prg 	loader.prg
-	c1541 -attach $@ -write src/kernel/kerninit 	kerninit
 	c1541 -attach $@ -write src/kernel/kern 		kern
 
 run: nosid.d64

@@ -73,9 +73,6 @@ sta $d018  ; VICII memory setup register
 ; load kernel code
 +load .kern_name, .kern_name_len, .load_error
 
-; load kernel init code
-+load .kern_init_name, .kern_init_name_len, .load_init_error
-
 ; print init message
 +puts .init_message
 
@@ -86,7 +83,7 @@ lda %101
 sta 1
 
 ; initialize the kernel
-jmp KERNINIT
+jmp KERN
 
 ; DATA
 .loading_message    !pet  "[+] Loading NOSID...", 13, 0

@@ -1,10 +1,7 @@
-all: kern kerninit
-
-kerninit: kerninit.asm
-	acme -f cbm $^
+all: kern
 
 kern: kern.asm
 	acme -f cbm $^
 
 clean:
-	rm -f kern kerninit
+	rm -f kern

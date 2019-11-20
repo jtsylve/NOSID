@@ -24,6 +24,7 @@
     ; set up interrupt vectors
     +write16 VECTOR_CS, .kern_init
     +write16 VECTOR_IRQ, .irq_handler
+    +write16 VECTOR_NMI, .nmi_handler
 
     ; set heartbeat timer latch value
     +write16 CIA1_TA_LO, HEARTBEAT_IRQ_TIME
@@ -50,9 +51,17 @@
     sei             ; disable interrupts
     +save_regs      ; backup registers
 
+    lda CIA1_ICR    ; acknowledge interrupt
+
     inc VICII_EC    ; change border color (just for testing)
 
-    lda CIA1_ICR    ; acknowledge interrupt
+    ; restart hearbeat timer
+    lda #%00010001
+    sta CIA1_CRA
+
     +restore_regs   ; restore registers
     cli             ; enable interrupts
+    rti
+
+.nmi_handler
     rti

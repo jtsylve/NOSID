@@ -51,8 +51,6 @@ LOAD    = $FFD5
 }
 
 .loader
-    sei ; disable interrupts
-
     jsr CINIT ; initialize VIC and clear screen
 
     ; set screen and border to black
@@ -76,6 +74,8 @@ LOAD    = $FFD5
 
     ; print init message
     +puts .init_message
+
+    sei ; disable interrupts
 
     ; switch out basic and kernel roms
     lda %111

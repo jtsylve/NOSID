@@ -34,9 +34,11 @@
     lda #%00010001
     sta CIA1_CRA
 
-    ; bank out I/O space
-    lda #%100
-    sta CPU_OUTR
+    !ifdef ENABLE_IO_BANKING {
+        ; bank out I/O space
+        lda #%100
+        sta CPU_OUTR
+    }
 
     ; enable interrupts
     cli 

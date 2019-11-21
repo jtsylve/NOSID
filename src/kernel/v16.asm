@@ -2,35 +2,63 @@
 
 VSTACKBASE = 0
 
-; enter virtual 16-bit mode
+; enter virtual 16-bit mode, and intialize R0
+; R0 = Y:A
 !macro venter {
-    +save_regs
-    ; X = RP, Y = R0
-    ; both are intially initialized to 0 and will decrement and underflow to 
-    ; point to the bottom of the stack on the next push
-    lda #0
+    sta VSTACKBASE+$FE
+    tya
+    sta VSTACKBASE+$FF
+    lda #$FE
+    tax
+    tay
+}
+; enter virtual 16-bit mode, and intialize R0
+; R0 = value
+!macro venter .value {
+    lda #<.value
+    sta VSTACKBASE+$FE
+    lda #>.value
+    sta VSTACKBASE+$FF
+    lda #$FE
     tax  
     tay
 }
 
 ; exit virtual 16-bit mode
+; Y:A = RP
 !macro vexit {
-    +restore_regs
+    lda VSTACKBASE+1, x
+    tay
+    lda VSTACKBASE, x
 }
 
 ; add a number of virtual registers to the vstack
 !macro vpushregs .n {
-    !for each, 0, .n {
+    !if .n = 1 {
+        ; 4 cycles
         dey
         dey
+    } else {
+        ; 8 cycles
+        tya
+        sec
+        sbc #.n * 2
+        tay
     }
 }
 
 ; remove a number of virtual registers from the vstack
 !macro vpopregs .n {
-    !for each, 0, .n {
+    !if .n = 1 {
+        ; 4 cycles
         iny
         iny
+    } else {
+        ; 8 cycles
+        tya
+        clc
+        adc #.n * 2
+        tay
     }
 }
 
@@ -63,10 +91,10 @@ VSTACKBASE = 0
 !macro vcopy .reg {
     tya
     pha
+
     clc
     adc #.reg * 2
     tay
-
     lda VSTACKBASE, y
     sta VSTACKBASE, x
     lda VSTACKBASE+1, y
@@ -149,8 +177,18 @@ VSTACKBASE = 0
     clc
     lda VSTACKBASE, x
     adc #<.value
-    lda VSTACKBASE+1, x
-    adc #>.value
+    sta VSTACKBASE, x
+    !if .value < 256 and .value >= 0 {
+        ; 8 cycles
+        bcc +
+        inc VSTACKBASE+1, x
++
+    } else {
+        ; 10 cycles
+        lda VSTACKBASE+1, x
+        adc #>.value
+        sta VSTACKBASE+1, x
+    }
 }
 
 ; add an immediate value to a given register
@@ -173,10 +211,10 @@ VSTACKBASE = 0
 !macro vadd .reg {
     tya
     pha
+
     clc
     adc #.reg * 2
     tay
-
     clc
     lda VSTACKBASE, x
     adc VSTACKBASE, y
@@ -199,8 +237,7 @@ VSTACKBASE = 0
 ; add two registers and store result in destination
 ; Rdest = Rlhs + Rrhs
 !macro vadd .dest, .lhs, .rhs {
-    +vsetrp .dest
-    +vcopy  .lhs
+    +vcopy  .dest .lhs
     +vadd   .rhs
 }
 
@@ -211,9 +248,18 @@ VSTACKBASE = 0
     lda VSTACKBASE, x
     sbc #<.value
     sta VSTACKBASE, x
-    lda VSTACKBASE+1, x
-    sbc #>.value
-    sta VSTACKBASE+1, x
+
+    !if .value < 256 and .value >= 0 {
+        ; 8 cycles
+        bcs +
+        dec VSTACKBASE+1, x
++
+    } else {
+        ; 10 cycles
+        lda VSTACKBASE+1, x
+        sbc #>.value
+        sta VSTACKBASE+1, x
+    }
 }
 
 ; subtracts a value from a given register
@@ -226,8 +272,7 @@ VSTACKBASE = 0
 ; subtracts a value from a given register and stores it in destination
 ; Rdest = Rreg - value
 !macro vsubi .dest, .reg, .value {
-    +vsetrp .dest
-    +vcopy  .reg
+    +vcopy  .dest .reg
     +vsubi  .value
 }
 
@@ -236,10 +281,10 @@ VSTACKBASE = 0
 !macro vsub .reg {
     tya
     pha
+
     clc
     adc #.reg * 2
     tay
-
     sec
     lda VSTACKBASE, x
     sbc VSTACKBASE, y
@@ -262,7 +307,6 @@ VSTACKBASE = 0
 ; subtracts a register from another register and stores in destination
 ; Rdest = Rlhs - Rrhs
 !macro vsub .dest, .lhs, .rhs {
-    +vsetrp .dest
-    +vcopy  .lhs
+    +vcopy  .dest .lhs
     +vsub   .rhs
 }

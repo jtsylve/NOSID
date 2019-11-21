@@ -2,6 +2,16 @@
 
 VSTACKBASE = 0
 
+; register aliases
+R0 = 0
+R1 = 1
+R2 = 2
+R3 = 3
+R4 = 4
+R5 = 5
+R6 = 6
+R7 = 7
+
 ; enter virtual 16-bit mode, and intialize R0
 ; R0 = Y:A
 !macro venter {
@@ -12,9 +22,22 @@ VSTACKBASE = 0
     tax
     tay
 }
-; enter virtual 16-bit mode, and intialize R0
+
+; enter virtual 16-bit mode, and intialize R0 with contents of memory
+; R0 = *address
+!macro venter .address {
+    lda <.address
+    sta VSTACKBASE+$FE
+    lda >.address
+    sta VSTACKBASE+$FF
+    lda #$FE
+    tax  
+    tay
+}
+
+; enter virtual 16-bit mode, and intialize R0 with an immediate
 ; R0 = value
-!macro venter .value {
+!macro venteri .value {
     lda #<.value
     sta VSTACKBASE+$FE
     lda #>.value
@@ -84,6 +107,22 @@ VSTACKBASE = 0
 !macro vset .reg, .value {
     +vsetrp .reg
     +vset   .value
+}
+
+; load the previous register with the contents of memory
+; RP = *address
+!macro vload .address {
+    lda <.address
+    sta VSTACKBASE, x
+    lda >.address
+    sta VSTACKBASE+1, x
+}
+
+; load a register with the contents of memory
+; Rreg = address
+!macro vload .reg .address {
+    +vsetrp .reg
+    +vload  .address
 }
 
 ; copy the contents from a register to the previous register

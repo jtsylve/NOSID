@@ -120,7 +120,7 @@ R7 = 7
 
 ; load a register with the contents of memory
 ; Rreg = address
-!macro vload .reg .address {
+!macro vload .reg, .address {
     +vsetrp .reg
     +vload  .address
 }
@@ -276,7 +276,7 @@ R7 = 7
 ; add two registers and store result in destination
 ; Rdest = Rlhs + Rrhs
 !macro vadd .dest, .lhs, .rhs {
-    +vcopy  .dest .lhs
+    +vcopy  .dest, .lhs
     +vadd   .rhs
 }
 
@@ -311,7 +311,7 @@ R7 = 7
 ; subtracts a value from a given register and stores it in destination
 ; Rdest = Rreg - value
 !macro vsubi .dest, .reg, .value {
-    +vcopy  .dest .reg
+    +vcopy  .dest, .reg
     +vsubi  .value
 }
 
@@ -346,6 +346,6 @@ R7 = 7
 ; subtracts a register from another register and stores in destination
 ; Rdest = Rlhs - Rrhs
 !macro vsub .dest, .lhs, .rhs {
-    +vcopy  .dest .lhs
+    +vcopy  .dest, .lhs
     +vsub   .rhs
 }

@@ -15,6 +15,7 @@
 ; The OUTPUT function must meet the following interface requirements:
 ;   -   There are two bytes of parameters stored on that tasks stack at OUTPUTP.
 ;       The contents of these bytes are implementation defined.
+;   -   The byte to be written should be stored in A
 ;   -   Return status is indicated by the carry bit.  The bit is clear on 
 ;       success.  If the bit is set, an error condition that is defined in this 
 ;       file is stored in A.

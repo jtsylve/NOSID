@@ -1,7 +1,7 @@
 ; virtual 16-bit ALU
 
-VSTACKBASE = 0
-VSTACKMAXREGS = 128
+VSTACKMAXREGS = 8
+VSTACKBASE = $0100 - (VSTACKMAXREGS * 2)
 
 ; register aliases
 R0 = 0
@@ -19,7 +19,7 @@ R7 = 7
     sta VSTACKBASE + (VSTACKMAXREGS * 2) - 2
     tya
     sta VSTACKBASE + (VSTACKMAXREGS * 2) - 1
-    lda (VSTACKMAXREGS * 2) - 2
+    lda #(VSTACKMAXREGS * 2) - 2
     tax
     tay
 }
@@ -31,7 +31,7 @@ R7 = 7
     sta VSTACKBASE + (VSTACKMAXREGS * 2) - 2
     lda >.address
     sta VSTACKBASE + (VSTACKMAXREGS * 2) - 1
-    lda (VSTACKMAXREGS * 2) - 2
+    lda #(VSTACKMAXREGS * 2) - 2
     tax  
     tay
 }
@@ -40,10 +40,10 @@ R7 = 7
 ; R0 = value
 !macro venteri .value {
     lda #<.value
-    sta VSTACKBASE+$FE
+    sta VSTACKBASE+(VSTACKMAXREGS * 2) - 2
     lda #>.value
-    sta VSTACKBASE+$FF
-    lda #$FE
+    sta VSTACKBASE+(VSTACKMAXREGS * 2) - 1
+    lda #(VSTACKMAXREGS * 2) - 2
     tax  
     tay
 }

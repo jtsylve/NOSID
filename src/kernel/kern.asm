@@ -11,6 +11,8 @@
 
 * = KERN
 
+; kernel intialization function
+; THIS MUST ALWAYS BE AT KERN!
 .kern_init
     ; disable VICII interrupts
     lda #0
@@ -48,6 +50,8 @@
 
     ; TODO - start init task
     jmp *
+
+!src "device/devices.asm"
 
 .irq_handler
     sei             ; disable interrupts

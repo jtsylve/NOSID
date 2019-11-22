@@ -1,5 +1,8 @@
 ; kernel library and helpful macros
 
+!src "../kernel/io.asm"
+!src "../kernel/stack.asm"
+
 ; write a 16 bit value to an address
 !macro write16 .address, .value {
     lda #<.value

@@ -1,6 +1,7 @@
 ; virtual 16-bit ALU
 
 VSTACKBASE = 0
+VSTACKMAXREGS = 128
 
 ; register aliases
 R0 = 0
@@ -15,10 +16,10 @@ R7 = 7
 ; enter virtual 16-bit mode, and intialize R0
 ; R0 = Y:A
 !macro venter {
-    sta VSTACKBASE+$FE
+    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 2
     tya
-    sta VSTACKBASE+$FF
-    lda #$FE
+    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 1
+    lda (VSTACKMAXREGS * 2) - 2
     tax
     tay
 }
@@ -27,10 +28,10 @@ R7 = 7
 ; R0 = *address
 !macro venter .address {
     lda <.address
-    sta VSTACKBASE+$FE
+    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 2
     lda >.address
-    sta VSTACKBASE+$FF
-    lda #$FE
+    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 1
+    lda (VSTACKMAXREGS * 2) - 2
     tax  
     tay
 }
@@ -53,6 +54,15 @@ R7 = 7
     lda VSTACKBASE+1, x
     tay
     lda VSTACKBASE, x
+}
+
+; exit virtual 16-bit mode
+; *address = RP
+!macro vexit .address {
+    lda VSTACKBASE+1, x
+    sta >.address
+    lda VSTACKBASE, x
+    sta <.address
 }
 
 ; add a number of virtual registers to the vstack
@@ -134,6 +144,7 @@ R7 = 7
     clc
     adc #.reg * 2
     tay
+
     lda VSTACKBASE, y
     sta VSTACKBASE, x
     lda VSTACKBASE+1, y
@@ -254,7 +265,7 @@ R7 = 7
     clc
     adc #.reg * 2
     tay
-    clc
+
     lda VSTACKBASE, x
     adc VSTACKBASE, y
     sta VSTACKBASE, x
@@ -324,6 +335,7 @@ R7 = 7
     clc
     adc #.reg * 2
     tay
+
     sec
     lda VSTACKBASE, x
     sbc VSTACKBASE, y

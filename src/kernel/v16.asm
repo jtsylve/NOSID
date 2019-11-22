@@ -16,36 +16,42 @@ R7 = 7
 ; enter virtual 16-bit mode, and intialize R0
 ; R0 = Y:A
 !macro venter {
-    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 2
+    R0_low  = VSTACKBASE + (VSTACKMAXREGS * 2) - 2
+    R0_high = VSTACKBASE + (VSTACKMAXREGS * 2) - 1
+
+    sta R0_low
     tya
-    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 1
-    lda #(VSTACKMAXREGS * 2) - 2
-    tax
-    tay
+    sta R0_high
+    ldx #R0_low
+    ldy #R0_low
 }
 
 ; enter virtual 16-bit mode, and intialize R0 with contents of memory
 ; R0 = *address
 !macro venter .address {
+    R0_low  = VSTACKBASE + (VSTACKMAXREGS * 2) - 2
+    R0_high = VSTACKBASE + (VSTACKMAXREGS * 2) - 1
+
     lda <.address
-    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 2
+    sta R0_low
     lda >.address
-    sta VSTACKBASE + (VSTACKMAXREGS * 2) - 1
-    lda #(VSTACKMAXREGS * 2) - 2
-    tax  
-    tay
+    sta R0_high
+    ldx #R0_low
+    ldy #R0_low
 }
 
 ; enter virtual 16-bit mode, and intialize R0 with an immediate
 ; R0 = value
 !macro venteri .value {
+    R0_low  = VSTACKBASE + (VSTACKMAXREGS * 2) - 2
+    R0_high = VSTACKBASE + (VSTACKMAXREGS * 2) - 1
+
     lda #<.value
-    sta VSTACKBASE+(VSTACKMAXREGS * 2) - 2
+    sta R0_low
     lda #>.value
-    sta VSTACKBASE+(VSTACKMAXREGS * 2) - 1
-    lda #(VSTACKMAXREGS * 2) - 2
-    tax  
-    tay
+    sta R0_high
+    ldx #R0_low
+    ldy #R0_low
 }
 
 ; exit virtual 16-bit mode

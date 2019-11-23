@@ -41,12 +41,6 @@
 
     jsr .kern_init_subsystems
 
-    !ifdef ENABLE_IO_BANKING {
-        ; bank out I/O space
-        lda #%100
-        sta CPU_OUTR
-    }
-
     ; enable interrupts
     cli 
 
@@ -67,7 +61,7 @@
 
     inc VICII_EC    ; change border color (just for testing)
 
-    ; restart hearbeat timer
+    ; restart heartbeat timer
     lda #%00010001
     sta CIA1_CRA
 

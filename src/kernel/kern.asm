@@ -39,6 +39,8 @@
     lda #%00010001
     sta CIA1_CRA
 
+    jsr .kern_init_subsystems
+
     !ifdef ENABLE_IO_BANKING {
         ; bank out I/O space
         lda #%100
@@ -52,6 +54,10 @@
     jmp *
 
 !src "device/devices.asm"
+
+.kern_init_subsystems
+    jsr .device_init
+    rts
 
 .irq_handler
     sei             ; disable interrupts

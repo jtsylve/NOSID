@@ -94,7 +94,11 @@ VICII_M5C   = $D02C ; sprite 5 color
 VICII_M6C   = $D02D ; sprite 6 color
 VICII_M7C   = $D02E ; sprite 7 color
 
-; VICII Colors
+; color ram
+COLOR_RAM       = $D800
+COLOR_RAM_SIZE  = $03E8
+
+; VICII colors
 BLACK       = 0
 WHITE       = 1
 RED         = 2

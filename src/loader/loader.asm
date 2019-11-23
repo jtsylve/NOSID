@@ -78,9 +78,9 @@ LOAD    = $FFD5
     sei ; disable interrupts
 
     ; switch out basic and kernel roms
-    lda %111
+    lda #%111
     sta CPU_DDR
-    lda %101
+    lda #%101
     sta CPU_OUTR
 
     ; initialize the kernel

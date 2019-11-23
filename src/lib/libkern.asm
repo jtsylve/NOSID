@@ -11,6 +11,60 @@
     sta .address+1
 }
 
+; fill memory with a value
+!macro memset .address, .value, .num {
+    lda #.value
+
+    !if .num > 255 {
+        ldx #0
+-
+        !for i, 0, (.num / 256) - 1 {
+            sta .address + i*256, x
+        }
+
+        inx
+        bne -
+    }
+
+    !set mod = .num % 256
+    !set modaddr = .address + .num - mod
+
+    !if mod != 0 {
+        ldx #mod
+-       dex
+        sta modaddr,x
+        bne -
+    }
+}
+
+; copy bytes in memory
+!macro memcpy .dest, .src, .num {
+    !if .num > 255 {
+        ldx #0
+-
+        !for i, 0, (.num / 256) - 1 {
+            lda .src  + i*256, x
+            sta .dest + i*256, x
+        }
+
+        inx
+        bne -
+    }
+
+    !set mod     = .num % 256
+    !set modsrc  = .src + .num - mod
+    !set moddest = .dest + .num - mod
+
+    !if mod != 0 {
+        ldx #mod
+-       dex
+        lda modsrc, x
+        sta moddest, x
+        txa
+        bne -
+    }
+}
+
 ; push all register to stack
 !macro save_regs {
     pha

@@ -11,6 +11,18 @@ INVERTCHAR      = $80
 ROM_CHARSET     = $D800
 CHARSET_SIZE    = $800
 
+!macro console_activate .n {
+    !if .n < 0 or .n > NUM_CONSOLES {
+        !error "invalid console number"
+    }
+
+    !set crbits = %0100      ; character rom bits
+    !set vbits  = %0111 + .n ; video bits
+
+    lda #(vbits << 4) + crbits
+    sta VICII_PTR
+}
+
 ; initialize console
 .dev_console_init 
     ; bank in character rom
@@ -55,8 +67,6 @@ CHARSET_SIZE    = $800
     and #%11111100
     sta CIA2_PRA
 
-    ; set video and character memory offsets for console #1
-    lda #%10000100
-    sta VICII_PTR
+    +console_activate 1
 
     rts

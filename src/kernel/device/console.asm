@@ -70,3 +70,36 @@ CHARSET_SIZE    = $800
     +console_activate 1
 
     rts
+
+CTOFFSET = OUTPUTP + 0 ; offset into the cursor table
+
+; I/O output function
+.dev_console_output
+    ; check for control character
+    ora #0                          ; change nothing, but set flags
+    bmi dco_control                 ; printable characters have top bit clear
+
+    ; add character to cursor position
+    ldx CTOFFSET                    ; read cursor table offset from stack params
+    sta (CONSOLE_CURSOR_TABLE, x)   ; store the character at the cursor address
+ 
+    ; increment cursor
+    inc CONSOLE_CURSOR_TABLE, x     ; increment the low byte of the cursor
+    bne * + 4                       ; skip top byte if no overflow
+    inc CONSOLE_CURSOR_TABLE+1, x   ; increment the high byte of the cursor
+ 
+    ; set the cursor marker
+    lda (CONSOLE_CURSOR_TABLE, x)   ; read the byte at the cursor
+    ora #INVERTCHAR                 ; set the character to be inverted
+    sta (CONSOLE_CURSOR_TABLE, x)   ; store the inverted character
+
+dco_success
+    clc                             ; no errors
+    rts                             ; done
+
+dco_control
+    cmp #CS_EOS                     ; is this the end of string marker?
+    bne dco_success                 ; all other control characters are ignored
+    lda #IO_EOS                     ; mark end of stream
+    sec                             ; flag error
+    rts                             ; done

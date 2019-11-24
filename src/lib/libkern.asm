@@ -1,5 +1,6 @@
 ; kernel library and helpful macros
 
+!src "../kernel/cs.asm"
 !src "../kernel/io.asm"
 !src "../kernel/stack.asm"
 
@@ -113,6 +114,6 @@ done
     bcs done        ; bail on error
     inx
 +   lda .string,x   ; read next character
-    bne -           ; continue if non-zero
+    jmp -
 done
 }

@@ -1,9 +1,9 @@
 ; kernel library and helpful macros
 
-!src "../kernel/cs.asm"
-!src "../kernel/io.asm"
-!src "../kernel/stack.asm"
-!src "../kernel/zero.asm"
+!src "../cs.asm"
+!src "../io.asm"
+!src "../stack.asm"
+!src "../zero.asm"
 
 ; write a 16 bit value to an address
 !macro write16 .address, .value {

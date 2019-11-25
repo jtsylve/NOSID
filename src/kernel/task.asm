@@ -3,17 +3,10 @@
 ; initialize and start a task
 ; entry point is in Y:A
 .task_init
-    ; decrement the EP
-    ora #0
-    bne * + 3
-    dey
-    sec
-    sbc #1
-
     ; store the EP to the stack
-    sta INIT_EP
+    sta INIT_SP-1
     tya
-    sta INIT_EP+1
+    sta INIT_SP
 
     ; store the task exit function to the stack
     ; this will be called when the EP function returns
@@ -50,10 +43,10 @@ ti_null_output
     sta OUTPUT+1
     
 ti_done
-    ldx #$F1
+    ldx #INIT_SP
     txs
     cli
-    rts
+    jmp (INIT_SP-1)
 
 .task_exit
     jmp *

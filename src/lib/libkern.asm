@@ -93,32 +93,31 @@
 
 ; get a byte from the input device
 !macro getc {
-+   sei
-    lda INPUT
-    sta j+1
-    lda INPUT+1
-    sta j+2
-j   jsr $0000       ; attempt to read a byte
-    bcc -           ; if no errors then we're done
++   tax
+    lda #>ret - 1 
+    pha
+    lda #<ret - 1 
+    pha
+    txa
+    jmp (INPUT)
+ret bcc -           ; if no errors then we're done
     cmp IO_NODATA   ; test if the device doesn't have data for us yet
     bne -           ; if any other error then we're done
-    cli
     +yield          ; yield to the task scheduler
     jmp +           ; try again
--   cli
+-
 }
 
 ; write a byte to the output device
 !macro putc {
-    sei
+    tax
+    lda #>+ - 1 
     pha
-    lda OUTPUT
-    sta j+1
-    lda OUTPUT+1
-    sta j+2
-    pla
-j   jsr $0000  ; write a byte
-    cli
+    lda #<+ - 1 
+    pha
+    txa
+    jmp (OUTPUT)
++
 }
 
 ; writes a string to the output device

@@ -91,16 +91,21 @@
     nop
 }
 
-; get a byte from the input device
-!macro getc {
-+   tax
-    lda #>ret - 1 
+!macro ijsr .address {
+    tax
+    lda #>+ - 1
     pha
-    lda #<ret - 1 
+    lda #<+ - 1
     pha
     txa
-    jmp (INPUT)
-ret bcc -           ; if no errors then we're done
+    jmp (.address)
++
+}
+
+; get a byte from the input device
+!macro getc {
++   +ijsr INPUT
+    bcc -           ; if no errors then we're done
     cmp IO_NODATA   ; test if the device doesn't have data for us yet
     bne -           ; if any other error then we're done
     +yield          ; yield to the task scheduler
@@ -110,14 +115,7 @@ ret bcc -           ; if no errors then we're done
 
 ; write a byte to the output device
 !macro putc {
-    tax
-    lda #>+ - 1 
-    pha
-    lda #<+ - 1 
-    pha
-    txa
-    jmp (OUTPUT)
-+
+    +ijsr OUTPUT
 }
 
 ; writes a string to the output device

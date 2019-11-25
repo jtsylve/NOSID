@@ -39,6 +39,10 @@
     lda #%00010001
     sta CIA1_CRA
 
+    ; set kernel stack pointer
+    ldx #INIT_KERN_SP
+    txs
+
     ; initialize subsystems
     jmp .kern_init_subsystems
 
@@ -47,9 +51,6 @@
 
 .kern_init_subsystems
     jsr .device_init
-    ldx #CONSOLE1
-    lda #<.dummy_task
-    ldy #>.dummy_task
     jmp .task_init
 
 .irq_handler

@@ -91,20 +91,25 @@
     nop
 }
 
+; indirect function call
 !macro ijsr .address {
-    tax
+    tax             ; preserve A
+
+    ; push the last byte of the jmp instruction to the stack.
+    ; when the function returns this will be the IP popped
     lda #>+ - 1
     pha
     lda #<+ - 1
     pha
-    txa
-    jmp (.address)
+
+    txa             ; restore A
+    jmp (.address)  ; indirect jump to function
 +
 }
 
 ; get a byte from the input device
 !macro getc {
-+   +ijsr INPUT
++   +ijsr INPUT     ; call the function at the task's input pointer
     bcc -           ; if no errors then we're done
     cmp IO_NODATA   ; test if the device doesn't have data for us yet
     bne -           ; if any other error then we're done
@@ -115,7 +120,7 @@
 
 ; write a byte to the output device
 !macro putc {
-    +ijsr OUTPUT
+    +ijsr OUTPUT    ; call the function at the task's output pointer
 }
 
 ; writes a string to the output device
@@ -123,12 +128,12 @@
     ldx #0          ; init counter
     beq +           ; skip
 -   +putc           ; output character
-    pla
+    pla             ; pull counter value from stack
     bcs done        ; bail on error
-    tax
-    inx
-+   txa
-    pha
+    tax             ; restore counter
+    inx             ; increment counter
++   txa             ; preserve counter
+    pha             ; push counter value to stack
     lda .string,x   ; read next character
     jmp -
 done

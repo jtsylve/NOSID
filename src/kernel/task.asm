@@ -1,12 +1,18 @@
 ; task management
 
+; initialize the task subsystem and start the initial process
+.task_init
+    ldx #CONSOLE1
+    lda #<.dummy_task
+    ldy #>.dummy_task
+    
 ; initialize and start a task
 ; entry point is in Y:A
-.task_init
-    ; store the EP to the stack
-    sta INIT_SP-1
+.task_start
+    ; store the EP right above the stack
+    sta INIT_TASK_SP-1
     tya
-    sta INIT_SP
+    sta INIT_TASK_SP
 
     ; store the task exit function to the stack
     ; this will be called when the EP function returns
@@ -43,10 +49,10 @@ ti_null_output
     sta OUTPUT+1
     
 ti_done
-    ldx #INIT_SP
+    ldx #INIT_TASK_SP
     txs
     cli
-    jmp (INIT_SP-1)
+    jmp (INIT_TASK_SP-1)
 
 .task_exit
     jmp *

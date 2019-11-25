@@ -3,6 +3,7 @@
 !src "../kernel/cs.asm"
 !src "../kernel/io.asm"
 !src "../kernel/stack.asm"
+!src "../kernel/zero.asm"
 
 ; write a 16 bit value to an address
 !macro write16 .address, .value {
@@ -92,18 +93,32 @@
 
 ; get a byte from the input device
 !macro getc {
-+   jsr INPUT       ; attempt to read a byte
-    bcc done        ; if no errors then we're done
++   sei
+    lda INPUT
+    sta j+1
+    lda INPUT+1
+    sta j+2
+j   jsr $0000       ; attempt to read a byte
+    bcc -           ; if no errors then we're done
     cmp IO_NODATA   ; test if the device doesn't have data for us yet
-    bne done        ; if any other error then we're done
+    bne -           ; if any other error then we're done
+    cli
     +yield          ; yield to the task scheduler
     jmp +           ; try again
-done
+-   cli
 }
 
 ; write a byte to the output device
 !macro putc {
-    jsr OUTPUT  ; write a byte
+    sei
+    pha
+    lda OUTPUT
+    sta j+1
+    lda OUTPUT+1
+    sta j+2
+    pla
+j   jsr $0000  ; write a byte
+    cli
 }
 
 ; writes a string to the output device
@@ -111,9 +126,13 @@ done
     ldx #0          ; init counter
     beq +           ; skip
 -   +putc           ; output character
+    pla
     bcs done        ; bail on error
+    tax
     inx
-+   lda .string,x   ; read next character
++   txa
+    pha
+    lda .string,x   ; read next character
     jmp -
 done
 }

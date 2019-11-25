@@ -4,12 +4,12 @@
 ; input or output to a device that essentially does nothing.
 
 ; always returns End of Stream error
-dev_null_input:
+.dev_null_input:
     lda IO_EOS
     sec
     rts
 
 ; always returns success
-dev_null_output:
+.dev_null_output:
     clc
     rts

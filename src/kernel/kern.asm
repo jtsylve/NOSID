@@ -39,34 +39,31 @@
     lda #%00010001
     sta CIA1_CRA
 
-    jsr .kern_init_subsystems
+    ; initialize subsystems
+    jmp .kern_init_subsystems
 
-    ; enable interrupts
-    cli 
-
-    ; TODO - start init task
-    jmp *
-
+!src "task.asm"
 !src "device/devices.asm"
 
 .kern_init_subsystems
     jsr .device_init
-    rts
+    ldx #CONSOLE1
+    lda #<.dummy_task
+    ldy #>.dummy_task
+    jmp .task_init
 
 .irq_handler
-    sei             ; disable interrupts
     +save_regs      ; backup registers
 
     lda CIA1_ICR    ; acknowledge interrupt
 
-    inc VICII_EC    ; change border color (just for testing)
+    ; inc VICII_EC    ; change border color (just for testing)
 
     ; restart heartbeat timer
     lda #%00010001
     sta CIA1_CRA
 
     +restore_regs   ; restore registers
-    cli             ; enable interrupts
     rti
 
 .nmi_handler

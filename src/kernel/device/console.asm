@@ -72,6 +72,10 @@ CHARSET_SIZE    = $800
     rts
 
 CTOFFSET = OUTPUTP + 0 ; offset into the cursor table
+CONSOLE1 = $02
+CONSOLE2 = $04
+CONSOLE3 = $05
+CONSOLE4 = $06
 
 ; I/O output function
 .dev_console_output

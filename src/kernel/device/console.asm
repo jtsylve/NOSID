@@ -150,8 +150,6 @@ dco_crlf
     rts
 
 .dev_console_scroll
-    lda #$C0
-    sta CONSOLE_CURSOR_TABLE+C_PTR, x
     lda CONSOLE_CURSOR_TABLE+C_PTR+1, x
     and #%11111100
     sei
@@ -159,15 +157,16 @@ dco_crlf
     sta dcs_copy+5
     ora #%00000011
     sta CONSOLE_CURSOR_TABLE+C_PTR+1, x
-    lda #CONSOLE_COLS
-    sta dcs_copy+1
+    sta dcs_wipe+2
+    lda #$C0
+    sta CONSOLE_CURSOR_TABLE+C_PTR, x
     txa
     pha
     ldx #4
 dcs_copy_256   
     ldy #$00
 dcs_copy
-    lda $0000, y
+    lda $0028, y
     sta $0000, y
     iny
     bne dcs_copy
@@ -179,13 +178,9 @@ dcs_done
     pla
     tax
     ldy #64
-    lda CONSOLE_CURSOR_TABLE+C_PTR, x
-    sta dcs_wipe+1
-    lda CONSOLE_CURSOR_TABLE+C_PTR+1, x
-    sta dcs_wipe+2
     lda #BLANKCHAR
 dcs_wipe
-    sta $0000, y
+    sta $00C0, y
     dey
     bne dcs_wipe
     cli

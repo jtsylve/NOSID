@@ -129,14 +129,13 @@
     beq +           ; skip
 -   +putc           ; output character
     pla             ; pull counter value from stack
-    bcs done        ; bail on error
+    bcs * + 12      ; bail on error
     tax             ; restore counter
     inx             ; increment counter
 +   txa             ; preserve counter
     pha             ; push counter value to stack
     lda .string,x   ; read next character
     jmp -
-done
 }
 
 !macro console_activate .n {

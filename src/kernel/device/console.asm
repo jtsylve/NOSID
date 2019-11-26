@@ -150,11 +150,11 @@ dco_crlf
     rts
 
 .dev_console_scroll
-    sei
     lda #$C0
     sta CONSOLE_CURSOR_TABLE+C_PTR, x
     lda CONSOLE_CURSOR_TABLE+C_PTR+1, x
     and #%11111100
+    sei
     sta dcs_copy+2
     sta dcs_copy+5
     ora #%00000011

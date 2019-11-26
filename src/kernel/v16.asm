@@ -304,18 +304,17 @@ R7 = 7
     lda VSTACKBASE, x
     sbc #<.value
     sta VSTACKBASE, x
-
+    bcs +
     !if .value < 256 and .value >= 0 {
         ; 8 cycles
-        bcs +
         dec VSTACKBASE+1, x
-+
     } else {
         ; 10 cycles
         lda VSTACKBASE+1, x
         sbc #>.value
         sta VSTACKBASE+1, x
     }
++
 }
 
 ; subtracts a value from a given register

@@ -138,3 +138,15 @@
     jmp -
 done
 }
+
+!macro console_activate .n {
+    !if .n < 0 or .n > NUM_CONSOLES {
+        !error "invalid console number"
+    }
+
+    !set crbits = %0100      ; character rom bits
+    !set vbits  = %0111 + .n ; video bits
+
+    lda #(vbits << 4) + crbits
+    sta VICII_PTR
+}

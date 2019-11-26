@@ -62,4 +62,4 @@ ti_done
     rts
    
 
-.hello_world !scr "Hello, World!", CS_EOS
+.hello_world !scr "Hello, World!", CS_CRLF, CS_EOS

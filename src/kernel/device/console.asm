@@ -150,37 +150,43 @@ dco_crlf
     rts
 
 .dev_console_scroll
+    ; self modifying code to set loop addresses
     lda CONSOLE_CURSOR_TABLE+C_PTR+1, x
     and #%11111100
     sei
     sta dcs_copy+2
     sta dcs_copy+5
+
+    ; set cursor to start of end of line
     ora #%00000011
     sta CONSOLE_CURSOR_TABLE+C_PTR+1, x
     sta dcs_wipe+2
     lda #$C0
     sta CONSOLE_CURSOR_TABLE+C_PTR, x
+
+    ; move 1 KiB of memory up 40 bytes
     txa
     pha
     ldx #4
 dcs_copy_256   
     ldy #$00
 dcs_copy
-    lda $0028, y
-    sta $0000, y
+    lda $0028, y ; high byte is modified
+    sta $0000, y ; high byte is modified
     iny
     bne dcs_copy
     inc dcs_copy+2
     inc dcs_copy+5
     dex
     bne dcs_copy_256
-dcs_done
     pla
     tax
-    ldy #64
+
+    ; wipe last column
+    ldy #CONSOLE_COLS
     lda #BLANKCHAR
 dcs_wipe
-    sta $00C0, y
+    sta $00C0, y ; high byte is modified
     dey
     bne dcs_wipe
     cli

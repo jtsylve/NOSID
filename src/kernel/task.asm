@@ -2,7 +2,7 @@
 
 ; initialize the task subsystem and start the initial process
 .task_init
-    +fork_prep .dummy_task, IT_NULL, OT_CONSOLE, 0, CONSOLE1, $C0
+    +fork_prep TERM, IT_NULL, OT_CONSOLE, 0, CONSOLE1, >TERM_TS
     
 ; initialize and start a task
 ; task struct is in Y:X
@@ -54,7 +54,6 @@ ti_done
 ; terminate a task
 .task_exit
     sei
-    +puts .goodbye_world
     jmp .task_init
 
 .task_kill
@@ -63,11 +62,3 @@ ti_done
 ; switch tasks
 .task_switch
     rts
-
-.dummy_task
-    +puts .hello_world
-    rts
-   
-
-.hello_world !scr "Hello, World!", CS_CRLF, CS_EOS
-.goodbye_world !scr "Goodbye, World!", CS_CRLF, CS_EOS

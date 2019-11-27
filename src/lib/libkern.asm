@@ -1,7 +1,9 @@
 ; kernel library and helpful macros
 
 !src "../cs.asm"
+!src "../hardware.asm"
 !src "../io.asm"
+!src "../memmap.asm"
 !src "../stack.asm"
 !src "../syscall.asm"
 !src "../zero.asm"

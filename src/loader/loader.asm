@@ -72,6 +72,9 @@ LOAD    = $FFD5
     ; load kernel code
     +load .kern_name, .kern_name_len, .load_error
 
+    ; load terminal
+    +load .term_name, .term_name_len, .term_load_error
+
     ; print init message
     +puts .init_message
 
@@ -90,10 +93,10 @@ LOAD    = $FFD5
 .loading_message    !pet  "[+] Loading NOSID...", 13, 0
 .init_message       !pet  "[+] Initializing kernel...", 13, 0
 .load_error         !pet  "Can not load KERN", 13, 0
-.load_init_error    !pet  "Can not load KERNINIT", 13, 0
+.term_load_error    !pet  "Can not load TERM", 13, 0
 
 .kern_name          !text "KERN" 
 .kern_name_len = * - .kern_name
-.kern_init_name     !text "KERNINIT" 
-.kern_init_name_len = * - .kern_init_name
+.term_name          !text "TERM"
+.term_name_len = * - .term_name
 

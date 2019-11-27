@@ -1,10 +1,6 @@
 ; KERN is the main kernel binary
 !to "kern", cbm
 
-
-!src "../hardware.asm"
-!src "../memmap.asm"
-
 !src "../lib/libkern.asm"
 
 !src "config.asm"
@@ -81,3 +77,8 @@ irq_done
 
 .nmi_handler
     rti
+
+
+!if * >= TERM_TS {
+    !error "kernel too big"
+}

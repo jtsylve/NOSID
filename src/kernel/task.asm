@@ -2,16 +2,23 @@
 
 ; initialize the task subsystem and start the initial process
 .task_init
-    ldx #CONSOLE1
-    lda #<.dummy_task
-    ldy #>.dummy_task
+    +fork_prep .dummy_task, IT_NULL, OT_CONSOLE, 0, CONSOLE1, $C0
     
 ; initialize and start a task
-; entry point is in Y:A
+; task struct is in Y:X
 .task_start
-    ; store the EP right above the stack
-    sta INIT_TASK_SP-1
+    ; save the task struct in the start pointer
+    txa
+    sta TASK_START_PTR
     tya
+    sta TASK_START_PTR+1
+
+    ; store the EP right above the stack
+    ldy #FORK_EP
+    lda (TASK_START_PTR), y
+    sta INIT_TASK_SP-1
+    ldy #FORK_EP+1
+    lda (TASK_START_PTR), y
     sta INIT_TASK_SP
 
     ; store the task exit function to the stack
@@ -28,24 +35,14 @@
     sta INPUT
     lda #>.dev_null_input
     sta INPUT+1
-    
-    ; check to see if we're using an output
-    txa
-    beq ti_null_output
 
     ; set console output
+    ldy #FORK_OP
+    lda (TASK_START_PTR), y
     sta CTOFFSET
     lda #<.dev_console_output
     sta OUTPUT
     lda #>.dev_console_output
-    sta OUTPUT+1
-    jmp ti_done
-
-ti_null_output
-    ; set null output
-    lda #<.dev_null_output
-    sta OUTPUT
-    lda #>.dev_null_output
     sta OUTPUT+1
     
 ti_done
@@ -54,8 +51,17 @@ ti_done
     cli
     jmp (INIT_TASK_SP-1)
 
+; terminate a task
 .task_exit
-    jmp *
+    sei
+    jmp .task_init
+
+.task_kill
+    rts
+
+; switch tasks
+.task_switch
+    rts
 
 .dummy_task
     +puts .hello_world

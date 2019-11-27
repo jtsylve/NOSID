@@ -56,13 +56,25 @@
 .irq_handler
     +save_regs      ; backup registers
 
-    lda CIA1_ICR    ; acknowledge interrupt
+    lda CIA1_ICR        ; check/acknowledge interrupt
+    bne irq_switch_task ; if non zero this the timer fired and we switch tasks
 
-    ; inc VICII_EC    ; change border color (just for testing)
+    ; handle syscalls here
+    tsx
+    lda SAVED_REG_A, x
+    beq irq_switch_task ; yield
+    ; handle other syscalls here
+    bne irq_done        ; unkown syscall
 
+irq_switch_task
+    jsr .task_switch
+
+irq_done
     ; restart heartbeat timer
     lda #%00010001
     sta CIA1_CRA
+
+    lda CIA1_ICR    ; acknowldege interrupts (in case one fired during irq)
 
     +restore_regs   ; restore registers
     rti

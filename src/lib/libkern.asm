@@ -3,6 +3,7 @@
 !src "../cs.asm"
 !src "../io.asm"
 !src "../stack.asm"
+!src "../syscall.asm"
 !src "../zero.asm"
 
 ; write a 16 bit value to an address
@@ -67,28 +68,31 @@
     }
 }
 
+; saved register offsets (relative to sp)
+; ex. lda SAVED_REG_X, x (where x is sp)
+SAVED_REG_Y  = STACK + $01
+SAVED_REG_X  = STACK + $02
+SAVED_REG_A  = STACK + $03
+SAVED_REG_PS = STACK + $04
+
 ; push all register to stack
 !macro save_regs {
-    pha
+    php ; PS
+    pha ; A
     txa
-    pha
+    pha ; X
     tya
-    pha
+    pha ; Y
 }
 
 ; restore saved registers from stack
 !macro restore_regs {
-    pla
+    pla ; Y
     tay
-    pla
+    pla ; X
     tax
-    pla
-}
-
-; yield to the scheduler, causing an early task switch
-!macro yield {
-    brk
-    nop
+    pla ; A
+    plp ; PS
 }
 
 ; indirect function call
@@ -148,4 +152,34 @@
 
     lda #(vbits << 4) + crbits
     sta VICII_PTR
+}
+
+!macro disable_task_switching {
+    sei
+}
+
+!macro enable_task_switching {
+    cli
+}
+
+; reserve stack space
+; new stack pointer will be stored in x
+!macro reserve_stack .n {
+    tsx
+    sec
+    txa
+    sbc #.n
+    tax
+    txs
+}
+
+; free stack space
+; new stack pointer will be stored in x
+!macro free_stack .n {
+    tsx
+    clc
+    txa
+    adc #.n
+    tax
+    txs
 }

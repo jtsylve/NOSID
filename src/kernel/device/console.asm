@@ -153,7 +153,7 @@ dco_crlf
     ; self modifying code to set loop addresses
     lda CONSOLE_CURSOR_TABLE+C_PTR+1, x
     and #%11111100
-    sei
+    +disable_task_switching
     sta dcs_copy+2
     sta dcs_copy+5
 
@@ -189,5 +189,5 @@ dcs_wipe
     sta $00C0, y ; high byte is modified
     dey
     bne dcs_wipe
-    cli
+    +enable_task_switching
     rts

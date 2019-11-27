@@ -113,7 +113,9 @@ SAVED_REG_PS = STACK + $04
 
 ; get a byte from the input device
 !macro getc {
+    +disable_task_switching
 +   +ijsr INPUT     ; call the function at the task's input pointer
+    +enable_task_switching
     bcc -           ; if no errors then we're done
     cmp IO_NODATA   ; test if the device doesn't have data for us yet
     bne -           ; if any other error then we're done
@@ -124,14 +126,17 @@ SAVED_REG_PS = STACK + $04
 
 ; write a byte to the output device
 !macro putc {
+    +disable_task_switching
     +ijsr OUTPUT    ; call the function at the task's output pointer
+    +enable_task_switching
 }
 
 ; writes a string to the output device
 !macro puts .string {
+    +disable_task_switching
     ldx #0          ; init counter
     beq +           ; skip
--   +putc           ; output character
+-   +ijsr OUTPUT    ; call the function at the task's output pointer
     pla             ; pull counter value from stack
     bcs * + 12      ; bail on error
     tax             ; restore counter
@@ -140,6 +145,7 @@ SAVED_REG_PS = STACK + $04
     pha             ; push counter value to stack
     lda .string,x   ; read next character
     jmp -
+    +enable_task_switching
 }
 
 !macro console_activate .n {

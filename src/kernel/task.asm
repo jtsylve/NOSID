@@ -54,6 +54,7 @@ ti_done
 ; terminate a task
 .task_exit
     sei
+    +puts .goodbye_world
     jmp .task_init
 
 .task_kill
@@ -69,3 +70,4 @@ ti_done
    
 
 .hello_world !scr "Hello, World!", CS_CRLF, CS_EOS
+.goodbye_world !scr "Goodbye, World!", CS_CRLF, CS_EOS

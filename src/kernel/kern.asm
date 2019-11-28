@@ -7,6 +7,14 @@
 
 * = KERN
 
+!macro restart_irq_timer {
+    ; restart heartbeat timer
+    lda #%00010001
+    sta CIA1_CRA
+
+    lda CIA1_ICR    ; acknowldege interrupts (in case one fired during irq)
+}
+
 ; kernel intialization function
 ; THIS MUST ALWAYS BE AT KERN!
 .kern_init
@@ -66,11 +74,7 @@ irq_switch_task
     jsr .task_switch
 
 irq_done
-    ; restart heartbeat timer
-    lda #%00010001
-    sta CIA1_CRA
-
-    lda CIA1_ICR    ; acknowldege interrupts (in case one fired during irq)
+    +restart_irq_timer
 
     +restore_regs   ; restore registers
     rti

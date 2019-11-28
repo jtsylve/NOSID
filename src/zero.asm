@@ -15,4 +15,4 @@ CON4_CURSOR             = CONSOLE_CURSOR_TABLE + $10
 TASK_DATA       = CONSOLE_CURSOR_TABLE + _CONSOLE_CURSOR_TABLE_SIZE
 _TASK_DATA_SIZE = $02
 
-TASK_START_PTR  = TASK_DATA + $00
+TASK_PTR  = TASK_DATA + $00 ; pointer used by task subsystem for indirect access

@@ -2,6 +2,7 @@
 
 SYS_YIELD = $00 ; yield to the task schedler
 SYS_FORK  = $01 ; start a new task
+SYS_KILL  = $02 ; kill a task
 
 !macro syscall .n {
     lda #.n
@@ -52,4 +53,10 @@ _FORK_SIZE = $09 ; size of fork input structure
     +fork_prep .ep, .it, .ot, .ip, .op, .id
     +syscall SYS_FORK
     +free_stack _FORK_SIZE
+}
+
+; kill a task
+; TID stored in y
+!macro kill {
+    !syscall #SYS_KILL
 }

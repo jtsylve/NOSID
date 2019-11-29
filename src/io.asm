@@ -26,7 +26,6 @@ IO_NODATA       = 2 ; there is currently no data to read
 IO_EOS          = 3 ; all data has been read (end of stream)
 IO_BROKEN_PIPE  = 4 ; the I/O device is no longer active
 
-
 ; input types
 IT_NULL     = $00
 ;IT_CONSOLE  = $01

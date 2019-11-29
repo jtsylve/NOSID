@@ -70,10 +70,6 @@ _C_SIZE = $04 ; size of the struct
     rts
 
 CTOFFSET = OUTPUTP + 0 ; offset into the cursor table
-CONSOLE1 = CON1_CURSOR - CONSOLE_CURSOR_TABLE
-CONSOLE2 = CON2_CURSOR - CONSOLE_CURSOR_TABLE
-CONSOLE3 = CON3_CURSOR - CONSOLE_CURSOR_TABLE
-CONSOLE4 = CON4_CURSOR - CONSOLE_CURSOR_TABLE
 
 ; I/O output function
 .dev_console_output

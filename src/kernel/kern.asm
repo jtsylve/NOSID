@@ -67,11 +67,29 @@
     tsx
     lda SAVED_REG_A, x
     beq irq_switch_task ; yield
-    ; handle other syscalls here
+    cmp #SYS_FORK
+    beq irq_sys_fork
+    cmp #SYS_KILL
+    beq irq_sys_kill
     bne irq_done        ; unkown syscall
 
+irq_sys_fork
+    jsr .task_switch_out
+    tsx
+    lda SAVED_REG_Y, x
+    tay
+    lda SAVED_REG_X, x
+    tax
+    jmp .task_start
+
+irq_sys_kill
+    lda SAVED_REG_Y, x
+    tay
+    jsr .task_kill
+
 irq_switch_task
-    jsr .task_switch
+    jsr .task_switch_out
+    jsr .task_switch_in
 
 irq_done
     +restart_irq_timer

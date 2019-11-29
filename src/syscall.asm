@@ -28,6 +28,8 @@ _FORK_SIZE = $09 ; size of fork input structure
 !macro fork_prep .ep, .it, .ot, .ip, .op, .id {
     +reserve_stack _FORK_SIZE
 
+    inx
+
     lda #<.ep
     sta STACK+FORK_EP, x
     lda #>.ep
@@ -58,5 +60,5 @@ _FORK_SIZE = $09 ; size of fork input structure
 ; kill a task
 ; TID stored in y
 !macro kill {
-    !syscall #SYS_KILL
+    +syscall SYS_KILL
 }

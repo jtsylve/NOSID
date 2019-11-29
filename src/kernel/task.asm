@@ -2,8 +2,10 @@
 
 ; terminate a task
 .task_exit
-    sei
     ldy TASKID
+    lda #0
+    sta TASKID
+    +kill
 
 ; kill a task
 .task_kill
@@ -71,22 +73,14 @@ ti_done
     cli
     jmp (INIT_TASK_SP-1)
 
-; switch tasks
-.task_switch
-    lda .task_nrunning
-    beq ts_done       ; if there's only one process running, no need to switch
-    jsr .task_switch_out
-    jsr .task_switch_in
-ts_done
-    rts
-
 ; switch the current task out
 .task_switch_out
     ; store the task page to the indirect pointer
+    lda TASKID
+    beq tso_done
+    sta TASK_PTR+1
     lda #0
     sta TASK_PTR
-    lda TASKID
-    sta TASK_PTR+1
 
     ; copy stack pointer to top of task page
     tsx
@@ -103,6 +97,7 @@ tso_copy_stack
     sta (TASK_PTR), y
     iny
     bne tso_copy_stack
+tso_done
     rts
 
 ; switch a new task in
@@ -186,7 +181,6 @@ tla_found
     tya
     sta .task_list, x
     txa
-    sta .task_marker
     inc .task_nrunning
     rts
 

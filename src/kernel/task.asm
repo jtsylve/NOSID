@@ -21,10 +21,8 @@
 ; task struct is in Y:X
 .task_start
     ; save the task struct in the start pointer
-    txa
-    sta TASK_PTR
-    tya
-    sta TASK_PTR+1
+    stx TASK_PTR
+    sty TASK_PTR+1
 
     ; store the EP right above the stack
     ldy #FORK_EP
@@ -157,10 +155,7 @@ tlf_search
     bmi tlf_0
 
 tlf_found
-    pha
-    txa
-    sta .task_marker
-    pla
+    stx .task_marker
     rts
 
 
@@ -187,8 +182,7 @@ tla_found
 ; remove a task to the running list
 ; TID stored in y
 .task_list_remove
-    tya
-    sta tlr_search + 4
+    sty tlr_search + 4
 
     ldx #MAX_TASKS-1
 tlr_search

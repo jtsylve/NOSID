@@ -20,8 +20,7 @@ R7 = 7
     !set R0_high = VSTACKBASE + (VSTACKMAXREGS * 2) - 1
 
     sta R0_low
-    tya
-    sta R0_high
+    sty R0_high
     ldx #R0_low
     ldy #R0_low
 }
